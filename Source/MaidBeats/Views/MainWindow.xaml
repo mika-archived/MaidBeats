@@ -8,6 +8,8 @@
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                    xmlns:metro="http://schemes.grabacr.net/winfx/2014/controls"
                    xmlns:prism="http://prismlibrary.com/"
+                   xmlns:tv="clr-namespace:MaidBeats.Views.Tabs"
+                   xmlns:tvm="clr-namespace:MaidBeats.ViewModels.Tabs"
                    xmlns:vm="clr-namespace:MaidBeats.ViewModels"
                    Title="{Binding Title.Value}"
                    Width="1305"
@@ -63,6 +65,49 @@
                 </StackPanel>
             </Grid>
         </Border>
+
+        <TabControl Grid.Row="1"
+                    Background="{DynamicResource BackgroundBrushKey}"
+                    BorderBrush="{DynamicResource BorderBrushKey}"
+                    BorderThickness="0,1,0,0"
+                    ItemsSource="{Binding TabItems}">
+            <TabControl.Resources>
+                <DataTemplate DataType="{x:Type tvm:TabBaseViewModel}" />
+                <DataTemplate DataType="{x:Type tvm:AboutTabViewModel}">
+                    <tv:AboutTab DataContext="{Binding}" />
+                </DataTemplate>
+            </TabControl.Resources>
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border"
+                                        Margin="10,0"
+                                        BorderBrush="{DynamicResource HighlightBorderBrushKey}"
+                                        BorderThickness="0,0,0,4">
+                                    <ContentPresenter Margin="0,5" ContentSource="Header">
+                                        <ContentPresenter.ContentTemplate>
+                                            <DataTemplate DataType="tvm:TabBaseViewModel">
+                                                <TextBlock Name="TextBlock"
+                                                           FontSize="16"
+                                                           Foreground="{DynamicResource ForegroundBrushKey}"
+                                                           Text="{Binding Title.Value}" />
+                                            </DataTemplate>
+                                        </ContentPresenter.ContentTemplate>
+                                    </ContentPresenter>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBrushKey}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.ItemContainerStyle>
+        </TabControl>
 
         <Grid Grid.Row="2" Background="{DynamicResource AccentBrushKey}">
             <Grid.ColumnDefinitions>
