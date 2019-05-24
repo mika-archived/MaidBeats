@@ -6,19 +6,13 @@ using MaidBeats.Models;
 
 using Microsoft.Xaml.Behaviors.Core;
 
-using Reactive.Bindings;
-
 namespace MaidBeats.ViewModels.Tabs
 {
     internal class AboutTabViewModel : TabBaseViewModel
     {
-        public override ReactiveProperty<string> Title { get; }
         public string Version => $"Version {MaidBeatsInfo.Version.Value}";
 
-        public AboutTabViewModel()
-        {
-            Title = new ReactiveProperty<string>("About MaidBeats");
-        }
+        public AboutTabViewModel() : base("About MaidBeats") { }
 
         #region NavigateUrlCommand
 

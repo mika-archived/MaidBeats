@@ -92,7 +92,7 @@
                                                 <TextBlock Name="TextBlock"
                                                            FontSize="16"
                                                            Foreground="{DynamicResource ForegroundBrushKey}"
-                                                           Text="{Binding Title.Value}" />
+                                                           Text="{Binding Title}" />
                                             </DataTemplate>
                                         </ContentPresenter.ContentTemplate>
                                     </ContentPresenter>
