@@ -1,0 +1,4 @@
+[submodule "deps/MetroRadiance"]
+	path = deps/MetroRadiance
+	url = git@github.com:mika-f/MetroRadiance.git
+	branch = support-vs2019
