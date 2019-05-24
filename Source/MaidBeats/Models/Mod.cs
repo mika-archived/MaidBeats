@@ -18,7 +18,7 @@ namespace MaidBeats.Models
         public string Category { get; set; }
 
         [JsonProperty("dependencies")]
-        public IEnumerable<Mod> Dependencies { get; set; }
+        public IEnumerable<DepMod> Dependencies { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }

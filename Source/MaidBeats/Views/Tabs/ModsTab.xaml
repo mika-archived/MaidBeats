@@ -105,10 +105,12 @@
             </HeaderedItemsControl.ItemTemplate>
             <HeaderedItemsControl.Template>
                 <ControlTemplate TargetType="HeaderedItemsControl">
-                    <StackPanel>
-                        <ContentPresenter ContentSource="Header" />
-                        <ItemsPresenter />
-                    </StackPanel>
+                    <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                        <StackPanel Orientation="Vertical">
+                            <ContentPresenter ContentSource="Header" />
+                            <ItemsPresenter />
+                        </StackPanel>
+                    </ScrollViewer>
                 </ControlTemplate>
             </HeaderedItemsControl.Template>
         </HeaderedItemsControl>
