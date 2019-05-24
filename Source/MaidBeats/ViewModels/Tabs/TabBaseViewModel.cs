@@ -1,4 +1,6 @@
-﻿using MaidBeats.Mvvm;
+﻿using System.Threading.Tasks;
+
+using MaidBeats.Mvvm;
 
 namespace MaidBeats.ViewModels.Tabs
 {
@@ -9,6 +11,11 @@ namespace MaidBeats.ViewModels.Tabs
         protected TabBaseViewModel(string title)
         {
             Title = title;
+        }
+
+        public virtual Task InitializeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

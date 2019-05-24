@@ -70,9 +70,13 @@
                     Background="{DynamicResource BackgroundBrushKey}"
                     BorderBrush="{DynamicResource BorderBrushKey}"
                     BorderThickness="0,1,0,0"
-                    ItemsSource="{Binding TabItems}">
+                    ItemsSource="{Binding TabItems}"
+                    SelectedIndex="{Binding SelectedTabIndex.Value, Mode=TwoWay}">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type tvm:TabBaseViewModel}" />
+                <DataTemplate DataType="{x:Type tvm:ModsTabViewModel}">
+                    <tv:ModsTab DataContext="{Binding}" />
+                </DataTemplate>
                 <DataTemplate DataType="{x:Type tvm:AboutTabViewModel}">
                     <tv:AboutTab DataContext="{Binding}" />
                 </DataTemplate>
