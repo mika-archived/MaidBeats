@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+using MaidBeats.Models;
 using MaidBeats.Views;
 
 using MetroRadiance.UI;
@@ -25,6 +26,18 @@ namespace MaidBeats
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             // Nothing to do in currently
+            containerRegistry.RegisterSingleton<BeatSaber>();
+        }
+
+        protected override void InitializeShell(Window shell)
+        {
+            var beatSaber = Container.Resolve<BeatSaber>();
+            beatSaber.TryToDetectInstallationPath();
+
+            while (string.IsNullOrWhiteSpace(beatSaber.InstallationPath))
+                beatSaber.SelectInstallationPathByUser();
+
+            base.InitializeShell(shell);
         }
 
         protected override Window CreateShell()

@@ -80,6 +80,9 @@
                 <DataTemplate DataType="{x:Type tvm:AboutTabViewModel}">
                     <tv:AboutTab DataContext="{Binding}" />
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type tvm:SettingsTabViewModel}">
+                    <tv:SettingsTab DataContext="{Binding}" />
+                </DataTemplate>
             </TabControl.Resources>
             <TabControl.ItemContainerStyle>
                 <Style TargetType="TabItem">
