@@ -82,6 +82,7 @@
                                 <Setter Property="FontSize" Value="16" />
                                 <Setter Property="HorizontalAlignment" Value="Center" />
                             </Style>
+                            <c:BooleanToColorBrushConverter x:Key="BooleanToColorBrushConverter" />
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Name" />
@@ -99,6 +100,7 @@
                                   IsEnabled="{Binding IsRequired, Mode=OneWay, Converter={StaticResource BooleanToReverseBooleanConverter}}" />
                         <TextBlock Grid.Column="1"
                                    Margin="5,0"
+                                   Foreground="{Binding IsLatestVersion.Value, Converter={StaticResource BooleanToColorBrushConverter}}"
                                    Text="{Binding InstalledVersion.Value}" />
                         <TextBlock Grid.Column="2"
                                    Margin="5,0"

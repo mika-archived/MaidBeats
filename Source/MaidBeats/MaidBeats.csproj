@@ -139,6 +139,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\BooleanToColorBrushConverter.cs" />
     <Compile Include="Converters\BooleanToReverseBooleanConverter.cs" />
     <Compile Include="Extensions\IDisposableExtensions.cs" />
     <Compile Include="Models\BeatMods\Author.cs" />

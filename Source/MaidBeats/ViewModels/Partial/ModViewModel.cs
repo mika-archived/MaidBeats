@@ -22,6 +22,7 @@ namespace MaidBeats.ViewModels.Partial
         public string LatestVersion => _mod.Version;
         public ReactiveProperty<string> InstalledVersion { get; }
         public bool IsRequired => _mod.IsRequired;
+        public ReactiveProperty<bool?> IsLatestVersion { get; }
         public ReactiveProperty<bool> IsChecked { get; }
 
         public ModViewModel(Mod mod, BeatSaber beatSaber)
@@ -29,6 +30,7 @@ namespace MaidBeats.ViewModels.Partial
             _mod = mod;
             _beatSaber = beatSaber;
             InstalledVersion = new ReactiveProperty<string>("-");
+            IsLatestVersion = new ReactiveProperty<bool?>();
             IsChecked = new ReactiveProperty<bool>(_mod.IsRequired);
 
             _beatSaber.InstalledMods.ToCollectionChanged().Subscribe(w =>
@@ -38,11 +40,13 @@ namespace MaidBeats.ViewModels.Partial
                 if (w.Action == NotifyCollectionChangedAction.Remove || w.Action == NotifyCollectionChangedAction.Reset)
                 {
                     IsChecked.Value = false; // removed from installed (uninstalled by hand or other application)
+                    IsLatestVersion.Value = null;
                     InstalledVersion.Value = "-";
                 }
                 else if (w.Action == NotifyCollectionChangedAction.Add)
                 {
                     IsChecked.Value = true;
+                    IsLatestVersion.Value = _mod.Version == w.Value.Version;
                     InstalledVersion.Value = w.Value.Version;
                 }
             }).AddTo(this);
