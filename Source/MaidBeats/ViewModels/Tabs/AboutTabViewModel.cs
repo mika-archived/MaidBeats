@@ -18,7 +18,7 @@ namespace MaidBeats.ViewModels.Tabs
 
         private ICommand _navigateUrlCommand;
 
-        public ICommand NavigateUrlCommand => _navigateUrlCommand ?? (_navigateUrlCommand = new ActionCommand(NavigateUrl));
+        public ICommand NavigateUrlCommand => _navigateUrlCommand ??= new ActionCommand(NavigateUrl);
 
         private void NavigateUrl(object args)
         {

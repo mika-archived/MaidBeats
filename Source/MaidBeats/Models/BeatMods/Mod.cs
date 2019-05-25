@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace MaidBeats.Models
+namespace MaidBeats.Models.BeatMods
 {
     public class Mod
     {
@@ -18,7 +18,7 @@ namespace MaidBeats.Models
         public string Category { get; set; }
 
         [JsonProperty("dependencies")]
-        public IEnumerable<DepMod> Dependencies { get; set; }
+        public IEnumerable<Mod> Dependencies { get; set; }
 
         [JsonProperty("description")]
         public string Description { get; set; }

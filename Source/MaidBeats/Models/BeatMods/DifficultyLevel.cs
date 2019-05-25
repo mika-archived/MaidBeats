@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MaidBeats.Models
+namespace MaidBeats.Models.BeatMods
 {
     public class DifficultyLevel
     {

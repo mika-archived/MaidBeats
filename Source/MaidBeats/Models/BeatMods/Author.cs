@@ -3,7 +3,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace MaidBeats.Models
+namespace MaidBeats.Models.BeatMods
 {
     public class Author
     {

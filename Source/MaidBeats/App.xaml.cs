@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 
 using MaidBeats.Models;
+using MaidBeats.Models.BeatMods;
 using MaidBeats.Models.Platform;
 using MaidBeats.Views;
 
@@ -27,6 +28,7 @@ namespace MaidBeats
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<IPlatform, Oculus>(); // TODO: support steam
+            containerRegistry.RegisterSingleton<BeatModsClient>();
             containerRegistry.RegisterSingleton<BeatSaber>();
         }
 

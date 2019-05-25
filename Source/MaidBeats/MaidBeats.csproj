@@ -141,15 +141,14 @@
     </Compile>
     <Compile Include="Converters\BooleanToReverseBooleanConverter.cs" />
     <Compile Include="Extensions\IDisposableExtensions.cs" />
-    <Compile Include="Models\Author.cs" />
-    <Compile Include="Models\BeatMods.cs" />
+    <Compile Include="Models\BeatMods\Author.cs" />
+    <Compile Include="Models\BeatMods\BeatModsClient.cs" />
     <Compile Include="Models\BeatSaber.cs" />
-    <Compile Include="Models\DepMod.cs" />
-    <Compile Include="Models\DifficultyLevel.cs" />
-    <Compile Include="Models\Download.cs" />
-    <Compile Include="Models\HashMD5.cs" />
+    <Compile Include="Models\BeatMods\DifficultyLevel.cs" />
+    <Compile Include="Models\BeatMods\Download.cs" />
+    <Compile Include="Models\BeatMods\HashMD5.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
-    <Compile Include="Models\Mod.cs" />
+    <Compile Include="Models\BeatMods\Mod.cs" />
     <Compile Include="Models\Platform\Oculus.cs" />
     <Compile Include="Models\Platform\IPlatform.cs" />
     <Compile Include="Models\Platform\Steam.cs" />

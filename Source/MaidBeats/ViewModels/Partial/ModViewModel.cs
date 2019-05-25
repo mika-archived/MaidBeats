@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
+using MaidBeats.Models.BeatMods;
 using MaidBeats.Mvvm;
 
 using Reactive.Bindings;

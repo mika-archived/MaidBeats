@@ -71,8 +71,7 @@
                   Height="32"
                   HorizontalAlignment="Left"
                   FontSize="16"
-                  IsEnabled="False"
                   ItemsSource="{Binding GameVersions}"
-                  SelectedIndex="0" />
+                  SelectedItem="{Binding GameVersion.Value, Mode=TwoWay}" />
     </Grid>
 </UserControl>

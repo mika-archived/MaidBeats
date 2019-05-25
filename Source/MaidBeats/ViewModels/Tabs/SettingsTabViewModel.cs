@@ -1,7 +1,9 @@
-﻿using System.Windows.Input;
+﻿using System.Threading.Tasks;
+using System.Windows.Input;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
+using MaidBeats.Models.BeatMods;
 
 using Prism.Commands;
 
@@ -13,16 +15,27 @@ namespace MaidBeats.ViewModels.Tabs
     public class SettingsTabViewModel : TabBaseViewModel
     {
         private readonly BeatSaber _beatSaber;
+        private readonly BeatModsClient _client;
         public ReactiveProperty<string> InstallationPath { get; }
         public ReactiveProperty<string> GameVersion { get; }
         public ReadOnlyReactiveCollection<string> GameVersions { get; }
 
-        public SettingsTabViewModel(BeatSaber beatSaber) : base("Settings")
+        public SettingsTabViewModel(BeatSaber beatSaber, BeatModsClient client) : base("Settings")
         {
             _beatSaber = beatSaber;
+            _client = client;
+
             InstallationPath = beatSaber.ObserveProperty(w => w.InstallationPath).ToReactiveProperty().AddTo(this);
-            GameVersion = beatSaber.ObserveProperty(w => w.GameVersion).ToReactiveProperty().AddTo(this);
-            GameVersions = beatSaber.GameVersions.ToReadOnlyReactiveCollection().AddTo(this);
+            GameVersion = beatSaber.ToReactivePropertyAsSynchronized(w => w.GameVersion, ignoreValidationErrorValue: true)
+                                   .SetValidateNotifyError(w => string.IsNullOrWhiteSpace(w) ? "Error" : null)
+                                   .AddTo(this);
+            GameVersions = client.GameVersions.ToReadOnlyReactiveCollection();
+        }
+
+        public override async Task InitializeAsync()
+        {
+            await _client.GameVersionsAsync();
+            GameVersion.Value = _beatSaber.GameVersion;
         }
 
         #region ChooseFolderCommand
@@ -33,7 +46,7 @@ namespace MaidBeats.ViewModels.Tabs
         private void ChooseFolder()
         {
             _beatSaber.SelectInstallationPathByUser();
-            _beatSaber.CheckGameVersion();
+            _beatSaber.TryToDetectGameVersion();
         }
 
         #endregion

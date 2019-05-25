@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using MaidBeats.Models.BeatMods;
+
 using Newtonsoft.Json;
 
 namespace MaidBeats.Models

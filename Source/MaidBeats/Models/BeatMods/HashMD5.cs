@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MaidBeats.Models
+namespace MaidBeats.Models.BeatMods
 {
     // ReSharper disable once InconsistentNaming
     public class HashMD5

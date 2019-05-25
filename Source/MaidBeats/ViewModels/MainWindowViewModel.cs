@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
+using MaidBeats.Models.BeatMods;
 using MaidBeats.Mvvm;
 using MaidBeats.ViewModels.Tabs;
 
@@ -16,13 +17,13 @@ namespace MaidBeats.ViewModels
         public ReactiveCollection<TabBaseViewModel> TabItems { get; }
         public ReactiveProperty<int> SelectedTabIndex { get; }
 
-        public MainWindowViewModel(BeatSaber beatSaber)
+        public MainWindowViewModel(BeatSaber beatSaber, BeatModsClient client)
         {
             Title = new ReactiveProperty<string>("MaidBeats - Mod Installer / Manager for Beat Saber").AddTo(this);
             TabItems = new ReactiveCollection<TabBaseViewModel>
             {
-                new ModsTabViewModel(beatSaber).AddTo(this),
-                new SettingsTabViewModel(beatSaber).AddTo(this),
+                new ModsTabViewModel(beatSaber, client).AddTo(this),
+                new SettingsTabViewModel(beatSaber, client).AddTo(this),
                 new AboutTabViewModel().AddTo(this)
             }.AddTo(this);
             SelectedTabIndex = new ReactiveProperty<int>(0);
