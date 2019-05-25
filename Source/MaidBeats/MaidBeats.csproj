@@ -46,6 +46,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -148,6 +149,7 @@
     <Compile Include="Models\HashMD5.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
     <Compile Include="Models\Mod.cs" />
+    <Compile Include="Models\Oculus.cs" />
     <Compile Include="Models\Song.cs" />
     <Compile Include="Mvvm\ViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

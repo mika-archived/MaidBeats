@@ -9,10 +9,12 @@ namespace MaidBeats.Models
 {
     public class BeatSaber : BindableBase
     {
+        private readonly Oculus _oculus;
         public ObservableCollection<string> GameVersions { get; }
 
-        public BeatSaber()
+        public BeatSaber(Oculus oculus)
         {
+            _oculus = oculus;
             InstallationPath = null;
             GameVersions = new ObservableCollection<string> { "1.0.0" };
             Version = GameVersions[0];
@@ -20,20 +22,21 @@ namespace MaidBeats.Models
 
         public void TryToDetectInstallationPath()
         {
-            var programs = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-            var oculus = Path.Combine(programs, "Oculus");
-            if (!Directory.Exists(oculus))
-                return; //
+            foreach (var path in _oculus.LibraryPaths)
+            {
+                if (!Directory.Exists(path))
+                    continue;
 
-            var software = Path.Combine(oculus, "Software", "Software");
-            if (!Directory.Exists(software))
-                return;
+                var software = Path.Combine(path, "Software");
+                if (!Directory.Exists(software))
+                    continue;
 
-            var beatsaber = Path.Combine(software, "hyperbolic-magnetism-beat-saber");
-            if (!Directory.Exists(beatsaber))
-                return;
-
-            InstallationPath = beatsaber;
+                var beatSaber = Path.Combine(software, "hyperbolic-magnetism-beat-saber");
+                if (!Directory.Exists(beatSaber))
+                    continue;
+                InstallationPath = beatSaber;
+                break;
+            }
         }
 
         public void SelectInstallationPathByUser()

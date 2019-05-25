@@ -26,11 +26,15 @@ namespace MaidBeats
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             // Nothing to do in currently
+            containerRegistry.RegisterSingleton<Oculus>();
             containerRegistry.RegisterSingleton<BeatSaber>();
         }
 
         protected override void InitializeShell(Window shell)
         {
+            var oculus = Container.Resolve<Oculus>();
+            oculus.GetLibraryPaths();
+
             var beatSaber = Container.Resolve<BeatSaber>();
             beatSaber.TryToDetectInstallationPath();
 
