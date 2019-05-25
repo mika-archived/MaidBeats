@@ -34,7 +34,7 @@ namespace MaidBeats.ViewModels.Tabs
 
         public override async Task InitializeAsync()
         {
-            await _client.GameVersionsAsync();
+            await _client.FetchGameVersionsAsync();
             GameVersion.Value = _beatSaber.GameVersion;
         }
 

@@ -27,7 +27,7 @@ namespace MaidBeats.ViewModels
                 new AboutTabViewModel().AddTo(this)
             }.AddTo(this);
             SelectedTabIndex = new ReactiveProperty<int>(0);
-            SelectedTabIndex.AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
+            SelectedTabIndex.Skip(1).AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
         }
     }
 }

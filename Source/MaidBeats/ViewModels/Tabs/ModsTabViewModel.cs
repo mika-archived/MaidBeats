@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Threading.Tasks;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
@@ -25,8 +25,18 @@ namespace MaidBeats.ViewModels.Tabs
             _client = client;
 
             GameVersion = beatSaber.ObserveProperty(w => w.GameVersion).ToReadOnlyReactiveProperty().AddTo(this);
-            Mods = new ObservableCollection<ModViewModel>().ToReadOnlyReactiveCollection().AddTo(this);
+            Mods = client.AvailableMods.ToReadOnlyReactiveCollection(w => new ModViewModel(w, beatSaber)).AddTo(this);
             IsLoading = new ReactiveProperty<bool>(false).AddTo(this);
+        }
+
+        public override async Task InitializeAsync()
+        {
+            IsLoading.Value = true;
+
+            await _client.FetchAllModsAsync();
+            await _client.FetchAvailableModsAsync(_beatSaber.GameVersion);
+
+            IsLoading.Value = false;
         }
     }
 }
