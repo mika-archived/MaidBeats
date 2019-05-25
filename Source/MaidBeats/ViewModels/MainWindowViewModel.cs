@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Windows.Input;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
 using MaidBeats.Models.BeatMods;
 using MaidBeats.Mvvm;
 using MaidBeats.ViewModels.Tabs;
+
+using Prism.Commands;
 
 using Reactive.Bindings;
 
@@ -29,5 +32,17 @@ namespace MaidBeats.ViewModels
             SelectedTabIndex = new ReactiveProperty<int>(0);
             SelectedTabIndex.Skip(1).AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
         }
+
+        #region LoadedCommand
+
+        private ICommand _loadedCommand;
+        public ICommand LoadedCommand => _loadedCommand ??= new DelegateCommand(Loaded);
+
+        private async void Loaded()
+        {
+            await TabItems[0].InitializeAsync();
+        }
+
+        #endregion
     }
 }
