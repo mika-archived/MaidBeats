@@ -33,8 +33,9 @@ namespace MaidBeats.ViewModels.Tabs
         {
             IsLoading.Value = true;
 
-            await _client.FetchAllModsAsync();
+            await _client.FetchAllModsAsync(_beatSaber.GameVersion);
             await _client.FetchAvailableModsAsync(_beatSaber.GameVersion);
+            _beatSaber.CheckInstalledMods(_client.AllMods);
 
             IsLoading.Value = false;
         }

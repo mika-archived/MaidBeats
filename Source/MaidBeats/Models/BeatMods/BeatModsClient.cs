@@ -41,11 +41,12 @@ namespace MaidBeats.Models.BeatMods
             GameVersions.AddRange(versions);
         }
 
-        public async Task FetchAllModsAsync()
+        public async Task FetchAllModsAsync(string gameVersion)
         {
             if (AllMods.Count > 0)
                 return;
 
+            var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion } };
             var mods = await ModsAsync();
             AllMods.AddRange(mods);
         }

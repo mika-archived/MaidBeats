@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -58,7 +59,7 @@ namespace MaidBeats.Models
 
         public void CheckInstalledMods(IEnumerable<Mod> mods)
         {
-            foreach (var mod in mods.Where(w => w.GameVersion == GameVersion))
+            foreach (var mod in mods)
                 foreach (var platform in mod.Downloads)
                 {
                     // currently, only support oculus or universal binary
