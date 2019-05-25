@@ -21,7 +21,7 @@ namespace MaidBeats.ViewModels
             Title = new ReactiveProperty<string>("MaidBeats - Mod Installer / Manager for Beat Saber").AddTo(this);
             TabItems = new ReactiveCollection<TabBaseViewModel>
             {
-                new ModsTabViewModel().AddTo(this),
+                new ModsTabViewModel(beatSaber).AddTo(this),
                 new SongsTabViewModel().AddTo(this),
                 new SettingsTabViewModel(beatSaber).AddTo(this),
                 new AboutTabViewModel().AddTo(this)

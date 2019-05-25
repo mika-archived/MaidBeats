@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="MaidBeats.Views.Tabs.ModsTab"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:MaidBeats.Converters"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:partial="clr-namespace:MaidBeats.ViewModels.Partial"
@@ -16,6 +17,7 @@
                     <PropertyGroupDescription PropertyName="Category" />
                 </CollectionViewSource.GroupDescriptions>
             </CollectionViewSource>
+            <c:BooleanToReverseBooleanConverter x:Key="BooleanToReverseBooleanConverter" />
         </Grid.Resources>
         <HeaderedItemsControl Grid.IsSharedSizeScope="True" ItemsSource="{Binding Source={StaticResource ModCollection}, Mode=OneWay}">
             <HeaderedItemsControl.GroupStyle>
@@ -86,10 +88,12 @@
                                   Height="24"
                                   Margin="5,0"
                                   Content="{Binding Name}"
-                                  FontSize="16" />
+                                  FontSize="16"
+                                  IsChecked="{Binding IsChecked.Value, Mode=TwoWay}"
+                                  IsEnabled="{Binding IsRequired, Mode=OneWay, Converter={StaticResource BooleanToReverseBooleanConverter}}" />
                         <TextBlock Grid.Column="1"
                                    Margin="5,0"
-                                   Text="{Binding InstalledVersion}" />
+                                   Text="{Binding InstalledVersion.Value}" />
                         <TextBlock Grid.Column="2"
                                    Margin="5,0"
                                    Text="{Binding LatestVersion}" />
