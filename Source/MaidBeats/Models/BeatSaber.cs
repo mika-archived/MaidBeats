@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 
 using Prism.Mvvm;
@@ -64,6 +66,34 @@ namespace MaidBeats.Models
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
             InstallationPath = dialog.SelectedPath;
+        }
+
+        public void CheckInstalledMods(IEnumerable<Mod> mods)
+        {
+            foreach (var mod in mods.Where(w => w.GameVersion == GameVersion))
+                foreach (var platform in mod.Downloads)
+                {
+                    // currently, only support oculus or universal binary
+                    if (platform.Type == "steam")
+                        continue;
+
+                    var installed = platform.HashMd5.All(w => CalcMd5(Path.Combine(InstallationPath, w.File)) == w.Hash);
+                    if (installed)
+                        InstalledMods.Add(mod);
+                }
+        }
+
+        private string CalcMd5(string path)
+        {
+            if (!File.Exists(path))
+                return null;
+
+            using var md5 = MD5.Create();
+            using var stream = new FileStream(path, FileMode.Open);
+            var hash = md5.ComputeHash(stream);
+            stream.Close();
+
+            return string.Concat(hash.Select(w => w.ToString("x2")));
         }
 
         #region InstallationPath
