@@ -6,51 +6,39 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 
+using MaidBeats.Models.BeatMods;
+using MaidBeats.Models.Platform;
+
 using Prism.Mvvm;
 
 namespace MaidBeats.Models
 {
     public class BeatSaber : BindableBase
     {
-        private readonly Oculus _oculus;
-        public ObservableCollection<string> GameVersions { get; }
+        private readonly IPlatform _platform;
         public ObservableCollection<Mod> InstalledMods { get; }
 
-        public BeatSaber(Oculus oculus)
+        public BeatSaber(IPlatform platform)
         {
-            _oculus = oculus;
+            _platform = platform;
             InstallationPath = null;
-            GameVersions = new ObservableCollection<string> { "1.0.0" }; // equals to supported version
-            GameVersion = GameVersions[0];
+            GameVersion = null;
             InstalledMods = new ObservableCollection<Mod>();
         }
 
         public void TryToDetectInstallationPath()
         {
-            foreach (var path in _oculus.LibraryPaths)
-            {
-                if (!Directory.Exists(path))
-                    continue;
-
-                var software = Path.Combine(path, "Software");
-                if (!Directory.Exists(software))
-                    continue;
-
-                var beatSaber = Path.Combine(software, "hyperbolic-magnetism-beat-saber");
-                if (!Directory.Exists(beatSaber))
-                    continue;
-                InstallationPath = beatSaber;
-                break;
-            }
+            InstallationPath = _platform.TryToDetectInstallationPath();
         }
 
-        public void CheckGameVersion()
+        public void TryToDetectGameVersion()
         {
             var path = Path.Combine(InstallationPath, "BeatSaberVersion.txt");
+            if (!File.Exists(path))
+                return;
+
             using var stream = new StreamReader(path);
-            var version = stream.ReadToEnd();
-            if (GameVersions.Contains(version))
-                GameVersion = version;
+            GameVersion = stream.ReadToEnd();
         }
 
         public void SelectInstallationPathByUser()
@@ -112,14 +100,14 @@ namespace MaidBeats.Models
 
         #endregion
 
-        #region Version
+        #region GameVersion
 
         private string _gameVersion;
 
         public string GameVersion
         {
             get => _gameVersion;
-            private set
+            set
             {
                 if (_gameVersion != value)
                     SetProperty(ref _gameVersion, value);

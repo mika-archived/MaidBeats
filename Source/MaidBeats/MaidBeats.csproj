@@ -150,7 +150,9 @@
     <Compile Include="Models\HashMD5.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
     <Compile Include="Models\Mod.cs" />
-    <Compile Include="Models\Oculus.cs" />
+    <Compile Include="Models\Platform\Oculus.cs" />
+    <Compile Include="Models\Platform\IPlatform.cs" />
+    <Compile Include="Models\Platform\Steam.cs" />
     <Compile Include="Models\Song.cs" />
     <Compile Include="Mvvm\ViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

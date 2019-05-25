@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 
 using MaidBeats.Models;
+using MaidBeats.Models.Platform;
 using MaidBeats.Views;
 
 using MetroRadiance.UI;
@@ -25,22 +26,18 @@ namespace MaidBeats
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            // Nothing to do in currently
-            containerRegistry.RegisterSingleton<Oculus>();
+            containerRegistry.Register<IPlatform, Oculus>(); // TODO: support steam
             containerRegistry.RegisterSingleton<BeatSaber>();
         }
 
         protected override void InitializeShell(Window shell)
         {
-            var oculus = Container.Resolve<Oculus>();
-            oculus.GetLibraryPaths();
-
             var beatSaber = Container.Resolve<BeatSaber>();
             beatSaber.TryToDetectInstallationPath();
 
             while (string.IsNullOrWhiteSpace(beatSaber.InstallationPath))
                 beatSaber.SelectInstallationPathByUser();
-            beatSaber.CheckGameVersion();
+            beatSaber.TryToDetectGameVersion(); // if cannot detect game version, MaidBeats does not fetch installable mods / search installed mods.
 
             base.InitializeShell(shell);
         }
