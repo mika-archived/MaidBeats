@@ -15,7 +15,6 @@ namespace MaidBeats.Models.BeatMods
     {
         private readonly string _host = "https://beatmods.com";
         private readonly HttpClient _httpClient;
-
         public ObservableCollection<string> GameVersions { get; }
         public ObservableCollection<Mod> AllMods { get; }
         public ObservableCollection<Mod> AvailableMods { get; }
@@ -47,7 +46,7 @@ namespace MaidBeats.Models.BeatMods
                 return;
 
             var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion } };
-            var mods = await ModsAsync();
+            var mods = await ModsAsync(parameters);
             AllMods.AddRange(mods);
         }
 
