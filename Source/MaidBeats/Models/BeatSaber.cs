@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Forms;
@@ -11,13 +12,15 @@ namespace MaidBeats.Models
     {
         private readonly Oculus _oculus;
         public ObservableCollection<string> GameVersions { get; }
+        public ObservableCollection<Mod> InstalledMods { get; }
 
         public BeatSaber(Oculus oculus)
         {
             _oculus = oculus;
             InstallationPath = null;
-            GameVersions = new ObservableCollection<string> { "1.0.0" };
-            Version = GameVersions[0];
+            GameVersions = new ObservableCollection<string> { "1.0.0" }; // equals to supported version
+            GameVersion = GameVersions[0];
+            InstalledMods = new ObservableCollection<Mod>();
         }
 
         public void TryToDetectInstallationPath()
@@ -37,6 +40,15 @@ namespace MaidBeats.Models
                 InstallationPath = beatSaber;
                 break;
             }
+        }
+
+        public void CheckGameVersion()
+        {
+            var path = Path.Combine(InstallationPath, "BeatSaberVersion.txt");
+            using var stream = new StreamReader(path);
+            var version = stream.ReadToEnd();
+            if (GameVersions.Contains(version))
+                GameVersion = version;
         }
 
         public void SelectInstallationPathByUser()
@@ -61,7 +73,7 @@ namespace MaidBeats.Models
         public string InstallationPath
         {
             get => _installationPath;
-            set
+            private set
             {
                 if (_installationPath != value)
                     SetProperty(ref _installationPath, value);
@@ -72,15 +84,15 @@ namespace MaidBeats.Models
 
         #region Version
 
-        private string _version;
+        private string _gameVersion;
 
-        public string Version
+        public string GameVersion
         {
-            get => _version;
-            set
+            get => _gameVersion;
+            private set
             {
-                if (_version != value)
-                    SetProperty(ref _version, value);
+                if (_gameVersion != value)
+                    SetProperty(ref _gameVersion, value);
             }
         }
 

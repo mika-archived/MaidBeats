@@ -40,6 +40,7 @@ namespace MaidBeats
 
             while (string.IsNullOrWhiteSpace(beatSaber.InstallationPath))
                 beatSaber.SelectInstallationPathByUser();
+            beatSaber.CheckGameVersion();
 
             base.InitializeShell(shell);
         }

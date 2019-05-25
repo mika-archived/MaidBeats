@@ -21,18 +21,19 @@ namespace MaidBeats.ViewModels.Tabs
         {
             _beatSaber = beatSaber;
             InstallationPath = beatSaber.ObserveProperty(w => w.InstallationPath).ToReactiveProperty().AddTo(this);
-            GameVersion = beatSaber.ObserveProperty(w => w.Version).ToReactiveProperty().AddTo(this);
+            GameVersion = beatSaber.ObserveProperty(w => w.GameVersion).ToReactiveProperty().AddTo(this);
             GameVersions = beatSaber.GameVersions.ToReadOnlyReactiveCollection().AddTo(this);
         }
 
         #region ChooseFolderCommand
 
         private ICommand _chooseFolderCommand;
-        public ICommand ChooseFolderCommand => _chooseFolderCommand ?? (_chooseFolderCommand = new DelegateCommand(ChooseFolder));
+        public ICommand ChooseFolderCommand => _chooseFolderCommand ??= new DelegateCommand(ChooseFolder);
 
         private void ChooseFolder()
         {
             _beatSaber.SelectInstallationPathByUser();
+            _beatSaber.CheckGameVersion();
         }
 
         #endregion
