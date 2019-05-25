@@ -11,6 +11,7 @@ using MaidBeats.ViewModels.Tabs;
 using Prism.Commands;
 
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace MaidBeats.ViewModels
 {
@@ -19,8 +20,9 @@ namespace MaidBeats.ViewModels
         public ReactiveProperty<string> Title { get; }
         public ReactiveCollection<TabBaseViewModel> TabItems { get; }
         public ReactiveProperty<int> SelectedTabIndex { get; }
+        public ReadOnlyReactiveProperty<string> StatusText { get; }
 
-        public MainWindowViewModel(BeatSaber beatSaber, BeatModsClient client)
+        public MainWindowViewModel(BeatSaber beatSaber, BeatModsClient client, StatusService text)
         {
             Title = new ReactiveProperty<string>("MaidBeats - Mod Installer / Manager for Beat Saber").AddTo(this);
             TabItems = new ReactiveCollection<TabBaseViewModel>
@@ -31,6 +33,8 @@ namespace MaidBeats.ViewModels
             }.AddTo(this);
             SelectedTabIndex = new ReactiveProperty<int>(0);
             SelectedTabIndex.Skip(1).AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
+            StatusText = text.ObserveProperty(w => w.Text).ToReadOnlyReactiveProperty().AddTo(this);
+            StatusText.DistinctUntilChanged().Delay(TimeSpan.FromSeconds(5)).Subscribe(w => text.Text = "Ready").AddTo(this);
         }
 
         #region LoadedCommand

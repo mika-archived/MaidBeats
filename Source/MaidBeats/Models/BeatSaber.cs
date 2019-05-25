@@ -16,11 +16,14 @@ namespace MaidBeats.Models
     public class BeatSaber : BindableBase
     {
         private readonly IPlatform _platform;
+        private readonly StatusService _statusService;
         public ObservableCollection<Mod> InstalledMods { get; }
 
-        public BeatSaber(IPlatform platform)
+        public BeatSaber(IPlatform platform, StatusService statusService)
         {
             _platform = platform;
+            _statusService = statusService;
+
             InstallationPath = null;
             GameVersion = null;
             InstalledMods = new ObservableCollection<Mod>();
@@ -58,6 +61,8 @@ namespace MaidBeats.Models
 
         public void CheckInstalledMods(IEnumerable<Mod> mods)
         {
+            _statusService.Text = "Checking installed mods...";
+
             foreach (var mod in mods)
                 foreach (var platform in mod.Downloads)
                 {

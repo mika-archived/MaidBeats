@@ -15,12 +15,14 @@ namespace MaidBeats.Models.BeatMods
     {
         private readonly string _host = "https://beatmods.com";
         private readonly HttpClient _httpClient;
+        private readonly StatusService _statusService;
         public ObservableCollection<string> GameVersions { get; }
         public ObservableCollection<Mod> AllMods { get; }
         public ObservableCollection<Mod> AvailableMods { get; }
 
-        public BeatModsClient()
+        public BeatModsClient(StatusService statusService)
         {
+            _statusService = statusService;
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", $"MaidBeats/{MaidBeatsInfo.Version.Value}");
             GameVersions = new ObservableCollection<string>();
@@ -36,6 +38,7 @@ namespace MaidBeats.Models.BeatMods
             if (GameVersions.Count > 0)
                 return; // use cache
 
+            _statusService.Text = "Fetching game versions from remote...";
             var versions = await GetAsync<IEnumerable<string>>("version");
             GameVersions.AddRange(versions);
         }
@@ -45,6 +48,7 @@ namespace MaidBeats.Models.BeatMods
             if (AllMods.Count > 0)
                 return;
 
+            _statusService.Text = "Fetching available mod list for current game version from remote...";
             var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion } };
             var mods = await ModsAsync(parameters);
             AllMods.AddRange(mods);
@@ -54,6 +58,7 @@ namespace MaidBeats.Models.BeatMods
         {
             AvailableMods.Clear();
 
+            _statusService.Text = "Fetching available approved mod list for current game version from remote...";
             var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion }, { "status", "approved" } };
             var mods = await ModsAsync(parameters);
             AvailableMods.AddRange(mods);

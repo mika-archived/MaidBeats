@@ -154,6 +154,7 @@
     <Compile Include="Models\Platform\IPlatform.cs" />
     <Compile Include="Models\Platform\Steam.cs" />
     <Compile Include="Models\Song.cs" />
+    <Compile Include="Models\StatusService.cs" />
     <Compile Include="Mvvm\ViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Partial\ModViewModel.cs" />
