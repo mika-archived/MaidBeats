@@ -17,16 +17,22 @@ namespace MaidBeats.Models
     {
         private readonly IPlatform _platform;
         private readonly StatusService _statusService;
+        private bool _isConfiguring;
+        public ObservableCollection<Mod> AvailableMods { get; }
         public ObservableCollection<Mod> InstalledMods { get; }
+        public ObservableCollection<Mod> ConfiguredMods { get; }
 
         public BeatSaber(IPlatform platform, StatusService statusService)
         {
             _platform = platform;
             _statusService = statusService;
+            _isConfiguring = false;
 
             InstallationPath = null;
             GameVersion = null;
-            InstalledMods = new ObservableCollection<Mod>();
+            AvailableMods = new ObservableCollection<Mod>(); // All Installable Mods
+            InstalledMods = new ObservableCollection<Mod>(); // Already Installed Mods
+            ConfiguredMods = new ObservableCollection<Mod>(); // Configuring (Changed) Mods
         }
 
         public void TryToDetectInstallationPath()
@@ -59,21 +65,90 @@ namespace MaidBeats.Models
             InstallationPath = dialog.SelectedPath;
         }
 
-        public void CheckInstalledMods(IEnumerable<Mod> mods)
+        public void CheckInstalledMods(List<Mod> mods)
         {
             _statusService.Text = "Checking installed mods...";
+            _isConfiguring = true;
+            AvailableMods.Clear();
+            InstalledMods.Clear();
+            ConfiguredMods.Clear();
 
-            foreach (var mod in mods)
-                foreach (var platform in mod.Downloads)
+            AvailableMods.AddRange(mods);
+
+            // local func
+            bool IsInstalled(IEnumerable<Download> platforms)
+            {
+                foreach (var platform in platforms)
                 {
-                    // currently, only support oculus or universal binary
                     if (platform.Type == "steam")
                         continue;
-
-                    var installed = platform.HashMd5.All(w => CalcMd5(Path.Combine(InstallationPath, w.File)) == w.Hash);
-                    if (installed)
-                        InstalledMods.Add(mod);
+                    return platform.HashMd5.All(w => CalcMd5(Path.Combine(InstallationPath, w.File)) == w.Hash);
                 }
+                return false;
+            }
+
+            foreach (var mod in mods)
+            {
+                var installed = mod.Versions.FirstOrDefault(w => IsInstalled(w.Value.Downloads));
+                if (installed.Equals(default(KeyValuePair<string, RawMod>)))
+                    continue;
+
+                mod.InstalledVersion = installed.Key; // set installed version
+                InstalledMods.Add(mod);
+            }
+
+            ConfiguredMods.AddRange(InstalledMods);
+            CreateDependencyTree();
+
+            _isConfiguring = false;
+        }
+
+        public void CreateDependencyTree()
+        {
+            foreach (var mod in ConfiguredMods)
+            {
+                if (!mod.Dependencies.ContainsKey(mod.LatestVersionStr))
+                    continue;
+
+                foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
+                {
+                    var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
+                    dep?.Dependents?.Add(mod.Name);
+                }
+            }
+        }
+
+        public void UpdateDependencyTree(Mod mod, bool isInstalling, bool doRemove = true)
+        {
+            if (_isConfiguring)
+                return; // skip
+
+            if (isInstalling)
+            {
+                if (mod.Dependencies.ContainsKey(mod.LatestVersionStr))
+                    foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
+                    {
+                        var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
+                        dep?.Dependents?.Add(mod.Name);
+                        UpdateDependencyTree(dep, true);
+                    }
+
+                if (!ConfiguredMods.Contains(mod))
+                    ConfiguredMods.Add(mod);
+            }
+            else
+            {
+                if (mod.Dependencies.ContainsKey(mod.LatestVersionStr))
+                    foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
+                    {
+                        var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
+                        dep?.Dependents?.Remove(mod.Name);
+                        UpdateDependencyTree(dep, false, false);
+                    }
+
+                if (mod.Dependents.Count <= 0 && doRemove)
+                    ConfiguredMods.Remove(mod);
+            }
         }
 
         private string CalcMd5(string path)

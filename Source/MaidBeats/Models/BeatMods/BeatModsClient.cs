@@ -17,7 +17,6 @@ namespace MaidBeats.Models.BeatMods
         private readonly HttpClient _httpClient;
         private readonly StatusService _statusService;
         public ObservableCollection<string> GameVersions { get; }
-        public ObservableCollection<Mod> AllMods { get; }
         public ObservableCollection<Mod> AvailableMods { get; }
 
         public BeatModsClient(StatusService statusService)
@@ -26,7 +25,6 @@ namespace MaidBeats.Models.BeatMods
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", $"MaidBeats/{MaidBeatsInfo.Version.Value}");
             GameVersions = new ObservableCollection<string>();
-            AllMods = new ObservableCollection<Mod>();
             AvailableMods = new ObservableCollection<Mod>();
         }
 
@@ -45,31 +43,52 @@ namespace MaidBeats.Models.BeatMods
 
         public async Task FetchAllModsAsync(string gameVersion)
         {
-            if (AllMods.Count > 0)
+            if (AvailableMods.Count > 0)
                 return;
 
             _statusService.Text = "Fetching available mod list for current game version from remote...";
             var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion } };
-            var mods = await ModsAsync(parameters);
-            AllMods.AddRange(mods);
+            var rawMods = await ModsAsync(parameters);
+            AvailableMods.AddRange(Flatten(rawMods));
+
+            RegenerateDependencyTree();
         }
 
-        public async Task FetchAvailableModsAsync(string gameVersion)
+        private IEnumerable<Mod> Flatten(IEnumerable<RawMod> rawMods)
         {
-            AvailableMods.Clear();
+            var mods = new List<Mod>();
+            foreach (var rawMod in rawMods)
+            {
+                var mod = mods.SingleOrDefault(w => w.Name == rawMod.Name);
+                if (mod == null)
+                    mods.Add(new Mod(rawMod));
+                else
+                    mod.AddVersion(rawMod.Version, rawMod);
+            }
 
-            _statusService.Text = "Fetching available approved mod list for current game version from remote...";
-            var parameters = new Dictionary<string, object> { { "gameVersion", gameVersion }, { "status", "approved" } };
-            var mods = await ModsAsync(parameters);
-            AvailableMods.AddRange(mods);
+            return mods.Where(w => w.Status == "approved");
+        }
+
+        // regenerate dependency tree, using latest approved version as dependencies in available mods
+        private void RegenerateDependencyTree()
+        {
+            foreach (var mod in AvailableMods)
+                foreach (var version in mod.Versions)
+                {
+                    if (!version.Value.HasDependencies)
+                        continue;
+
+                    var dependencies = version.Value.Dependencies.Select(w => AvailableMods.SingleOrDefault(v => w.Name == v.Name)).Where(w => w != null).Select(w => w.Name);
+                    mod.AddDependencies(version.Key, dependencies.ToList());
+                }
         }
 
         /// <summary>
         ///     fetch registered mod list, supported parameters are category, status, name, version, gameVersion, author and sort
         /// </summary>
-        private async Task<IEnumerable<Mod>> ModsAsync(Dictionary<string, object> parameters = null)
+        private async Task<IEnumerable<RawMod>> ModsAsync(Dictionary<string, object> parameters = null)
         {
-            return await GetAsync<IEnumerable<Mod>>("mod", parameters);
+            return await GetAsync<IEnumerable<RawMod>>("mod", parameters);
         }
 
         private async Task<T> GetAsync<T>(string url, Dictionary<string, object> parameters = null)

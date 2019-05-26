@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Reactive.Linq;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
-using MaidBeats.Models.BeatMods;
 using MaidBeats.Mvvm;
 
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace MaidBeats.ViewModels.Partial
 {
@@ -19,37 +20,46 @@ namespace MaidBeats.ViewModels.Partial
         public string Category => _mod.Category;
         public string Description => _mod.Description.Replace("\r", "").Replace("\n", "");
         public string Name => _mod.Name;
-        public string LatestVersion => _mod.Version;
+        public string LatestVersion => _mod.LatestVersion.ToString();
         public ReactiveProperty<string> InstalledVersion { get; }
-        public bool IsRequired => _mod.IsRequired;
         public ReactiveProperty<bool?> IsLatestVersion { get; }
+        public ReactiveProperty<bool> IsRequired { get; }
+        public ReactiveProperty<string> DependentBy { get; }
         public ReactiveProperty<bool> IsChecked { get; }
 
         public ModViewModel(Mod mod, BeatSaber beatSaber)
         {
             _mod = mod;
             _beatSaber = beatSaber;
-            InstalledVersion = new ReactiveProperty<string>("-");
-            IsLatestVersion = new ReactiveProperty<bool?>();
-            IsChecked = new ReactiveProperty<bool>(_mod.IsRequired);
-
-            _beatSaber.InstalledMods.ToCollectionChanged().Subscribe(w =>
+            InstalledVersion = mod.ObserveProperty(w => w.InstalledVersion)
+                                  .ToReactiveProperty()
+                                  .AddTo(this);
+            IsLatestVersion = InstalledVersion.Select(w => w == "-" ? (bool?) null : w == LatestVersion).ToReactiveProperty().AddTo(this);
+            IsRequired = mod.Dependents.ToCollectionChanged().Select(_ => mod.Dependents.Count > 0).ToReactiveProperty().AddTo(this);
+            DependentBy = new ReactiveProperty<string>();
+            mod.Dependents.ToCollectionChanged().Subscribe(_ => DependentBy.Value = $"Dependent by {string.Join(", ", mod.Dependents)}").AddTo(this);
+            IsChecked = new ReactiveProperty<bool>(false);
+            IsChecked.Subscribe(w => beatSaber.UpdateDependencyTree(_mod, w)).AddTo(this);
+            beatSaber.ConfiguredMods.ToCollectionChanged().Subscribe(w =>
             {
-                if (w.Value.Name != _mod.Name)
-                    return;
-                if (w.Action == NotifyCollectionChangedAction.Remove || w.Action == NotifyCollectionChangedAction.Reset)
+                // DO NOT CHANGE INSTALLED MODS
+                switch (w.Action)
                 {
-                    IsChecked.Value = false; // removed from installed (uninstalled by hand or other application)
-                    IsLatestVersion.Value = null;
-                    InstalledVersion.Value = "-";
+                    case NotifyCollectionChangedAction.Add:
+                        if (Name == w.Value.Name)
+                            IsChecked.Value = true;
+                        break;
+
+                    case NotifyCollectionChangedAction.Remove:
+                        if (Name == w.Value.Name)
+                            IsChecked.Value = false;
+                        break;
+
+                    case NotifyCollectionChangedAction.Reset:
+                        IsChecked.Value = false;
+                        break;
                 }
-                else if (w.Action == NotifyCollectionChangedAction.Add)
-                {
-                    IsChecked.Value = true;
-                    IsLatestVersion.Value = _mod.Version == w.Value.Version;
-                    InstalledVersion.Value = w.Value.Version;
-                }
-            }).AddTo(this);
+            });
         }
     }
 }

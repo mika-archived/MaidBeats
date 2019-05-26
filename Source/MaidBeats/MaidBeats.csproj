@@ -149,7 +149,8 @@
     <Compile Include="Models\BeatMods\Download.cs" />
     <Compile Include="Models\BeatMods\HashMD5.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
-    <Compile Include="Models\BeatMods\Mod.cs" />
+    <Compile Include="Models\BeatMods\RawMod.cs" />
+    <Compile Include="Models\Mod.cs" />
     <Compile Include="Models\Platform\Oculus.cs" />
     <Compile Include="Models\Platform\IPlatform.cs" />
     <Compile Include="Models\Platform\Steam.cs" />

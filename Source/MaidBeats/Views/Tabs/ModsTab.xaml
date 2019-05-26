@@ -97,11 +97,12 @@
                                   Content="{Binding Name}"
                                   FontSize="16"
                                   IsChecked="{Binding IsChecked.Value, Mode=TwoWay}"
-                                  IsEnabled="{Binding IsRequired, Mode=OneWay, Converter={StaticResource BooleanToReverseBooleanConverter}}" />
+                                  IsEnabled="{Binding IsRequired.Value, Mode=OneWay, Converter={StaticResource BooleanToReverseBooleanConverter}}"
+                                  ToolTip="{Binding DependentBy.Value, Mode=OneWay}" />
                         <TextBlock Grid.Column="1"
                                    Margin="5,0"
-                                   Foreground="{Binding IsLatestVersion.Value, Converter={StaticResource BooleanToColorBrushConverter}}"
-                                   Text="{Binding InstalledVersion.Value}" />
+                                   Foreground="{Binding IsLatestVersion.Value, Converter={StaticResource BooleanToColorBrushConverter}, Mode=OneWay}"
+                                   Text="{Binding InstalledVersion.Value, Mode=OneWay}" />
                         <TextBlock Grid.Column="2"
                                    Margin="5,0"
                                    Text="{Binding LatestVersion}" />

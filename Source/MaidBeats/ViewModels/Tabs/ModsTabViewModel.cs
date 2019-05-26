@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using MaidBeats.Extensions;
@@ -29,7 +30,6 @@ namespace MaidBeats.ViewModels.Tabs
             GameVersion.Subscribe(_ =>
             {
                 // clear caches
-                _client.AllMods.Clear();
                 _client.AvailableMods.Clear();
             }).AddTo(this);
             Mods = client.AvailableMods.ToReadOnlyReactiveCollection(w => new ModViewModel(w, beatSaber)).AddTo(this);
@@ -41,8 +41,7 @@ namespace MaidBeats.ViewModels.Tabs
             IsLoading.Value = true;
 
             await _client.FetchAllModsAsync(_beatSaber.GameVersion);
-            await _client.FetchAvailableModsAsync(_beatSaber.GameVersion);
-            _beatSaber.CheckInstalledMods(_client.AllMods);
+            await Task.Run(() => _beatSaber.CheckInstalledMods(_client.AvailableMods.ToList()));
 
             IsLoading.Value = false;
         }
