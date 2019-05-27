@@ -31,9 +31,7 @@ namespace MaidBeats.ViewModels.Partial
         {
             _mod = mod;
             _beatSaber = beatSaber;
-            InstalledVersion = mod.ObserveProperty(w => w.InstalledVersion)
-                                  .ToReactiveProperty()
-                                  .AddTo(this);
+            InstalledVersion = mod.ObserveProperty(w => w.InstalledVersion).Select(w => w ?? "-").ToReactiveProperty().AddTo(this);
             IsLatestVersion = InstalledVersion.Select(w => w == "-" ? (bool?) null : w == LatestVersion).ToReactiveProperty().AddTo(this);
             IsRequired = mod.Dependents.ToCollectionChanged().Select(_ => mod.Dependents.Count > 0 || mod.IsRequired).ToReactiveProperty(mod.IsRequired).AddTo(this);
             DependentBy = new ReactiveProperty<string>();
