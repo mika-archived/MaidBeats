@@ -98,6 +98,8 @@ namespace MaidBeats.Models
             }
 
             ConfiguredMods.AddRange(InstalledMods);
+
+            ClearDependencyTree();
             CreateDependencyTree();
 
             _isConfiguring = false;
@@ -149,6 +151,12 @@ namespace MaidBeats.Models
                 if (mod.Dependents.Count <= 0 && doRemove)
                     ConfiguredMods.Remove(mod);
             }
+        }
+
+        public void ClearDependencyTree()
+        {
+            foreach (var mod in AvailableMods)
+                mod.Dependents.Clear();
         }
 
         private string CalcMd5(string path)
