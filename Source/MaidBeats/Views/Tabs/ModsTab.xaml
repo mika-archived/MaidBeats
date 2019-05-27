@@ -98,7 +98,8 @@
                                   FontSize="16"
                                   IsChecked="{Binding IsChecked.Value, Mode=TwoWay}"
                                   IsEnabled="{Binding IsRequired.Value, Mode=OneWay, Converter={StaticResource BooleanToReverseBooleanConverter}}"
-                                  ToolTip="{Binding DependentBy.Value, Mode=OneWay}" />
+                                  ToolTip="{Binding DependentBy.Value, Mode=OneWay}"
+                                  ToolTipService.ShowOnDisabled="True" />
                         <TextBlock Grid.Column="1"
                                    Margin="5,0"
                                    Foreground="{Binding IsLatestVersion.Value, Converter={StaticResource BooleanToColorBrushConverter}, Mode=OneWay}"
