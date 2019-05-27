@@ -131,7 +131,11 @@ namespace MaidBeats.Models
                     foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
                     {
                         var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
-                        dep?.Dependents?.Add(mod.Name);
+                        if (dep == null)
+                            continue;
+
+                        if (!dep.Dependents.Contains(mod.Name))
+                            dep.Dependents.Add(mod.Name);
                         UpdateDependencyTree(dep, true);
                     }
 
@@ -144,8 +148,12 @@ namespace MaidBeats.Models
                     foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
                     {
                         var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
-                        dep?.Dependents?.Remove(mod.Name);
-                        UpdateDependencyTree(dep, false, false);
+                        if (dep == null)
+                            continue;
+
+                        dep.Dependents.Remove(mod.Name);
+
+                        // UpdateDependencyTree(dep, false, false);
                     }
 
                 if (mod.Dependents.Count <= 0 && doRemove)

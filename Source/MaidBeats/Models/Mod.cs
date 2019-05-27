@@ -20,6 +20,7 @@ namespace MaidBeats.Models
         public string Description => Versions[LatestVersionStr].Description;
         public string GameVersion => Versions[LatestVersionStr].GameVersion;
         public string Name => Versions[LatestVersionStr].Name;
+        public bool IsRequired => Versions[LatestVersionStr].IsRequired;
         public string Status => Versions[LatestVersionStr].Status;
         public Version LatestVersion { get; set; }
         public string LatestVersionStr => LatestVersion.ToString();

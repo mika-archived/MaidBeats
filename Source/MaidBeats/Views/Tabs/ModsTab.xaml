@@ -151,7 +151,7 @@
             <Button Grid.Column="1"
                     Width="200"
                     HorizontalAlignment="Right"
-                    Content="Apply Changes or Updates"
+                    Content="Apply Changes and Updates"
                     FontSize="14" />
         </Grid>
         <Grid Grid.Row="0"

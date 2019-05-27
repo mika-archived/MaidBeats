@@ -35,7 +35,7 @@ namespace MaidBeats.ViewModels.Partial
                                   .ToReactiveProperty()
                                   .AddTo(this);
             IsLatestVersion = InstalledVersion.Select(w => w == "-" ? (bool?) null : w == LatestVersion).ToReactiveProperty().AddTo(this);
-            IsRequired = mod.Dependents.ToCollectionChanged().Select(_ => mod.Dependents.Count > 0).ToReactiveProperty().AddTo(this);
+            IsRequired = mod.Dependents.ToCollectionChanged().Select(_ => mod.Dependents.Count > 0 || mod.IsRequired).ToReactiveProperty(mod.IsRequired).AddTo(this);
             DependentBy = new ReactiveProperty<string>();
             mod.Dependents.ToCollectionChanged().Subscribe(_ => DependentBy.Value = mod.Dependents.Count > 0 ? $"Dependent by {string.Join(", ", mod.Dependents)}" : null).AddTo(this);
             IsChecked = new ReactiveProperty<bool>(false);
