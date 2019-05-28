@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
 using MaidBeats.Models.BeatMods;
 using MaidBeats.ViewModels.Partial;
+
+using Prism.Commands;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -45,5 +48,22 @@ namespace MaidBeats.ViewModels.Tabs
 
             IsLoading.Value = false;
         }
+
+        #region ApplyCommand
+
+        private ICommand _applyCommand;
+        public ICommand ApplyCommand => _applyCommand ??= new DelegateCommand(Apply);
+
+        private async void Apply()
+        {
+            IsLoading.Value = true;
+
+            await _beatSaber.ApplyChanges();
+            await Task.Run(() => _beatSaber.CheckInstalledMods(_client.AvailableMods.ToList()));
+
+            IsLoading.Value = false;
+        }
+
+        #endregion
     }
 }
