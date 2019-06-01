@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using MaidBeats.Models.BeatMods;
+using MaidBeats.Models.Installers;
 using MaidBeats.Models.Platform;
 
 using Prism.Mvvm;
@@ -20,6 +21,7 @@ namespace MaidBeats.Models
     public class BeatSaber : BindableBase
     {
         private readonly HttpClient _httpClient;
+        private readonly List<InstallerBase> _installers;
         private readonly IPlatform _platform;
         private readonly StatusService _statusService;
         private bool _isConfiguring;
@@ -33,6 +35,7 @@ namespace MaidBeats.Models
             _statusService = statusService;
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", $"MaidBeats/{MaidBeatsInfo.Version.Value}");
+            _installers = new List<InstallerBase> { new InstallerBase(), new BSIPA() };
             _isConfiguring = false;
 
             InstallationPath = null;
@@ -200,12 +203,12 @@ namespace MaidBeats.Models
         {
             foreach (var mod in mods)
             {
-                await Uninstall(new List<Mod> { mod });
-                await Install(new List<Mod> { mod });
+                await Uninstall(new List<Mod> { mod }, false);
+                await Install(new List<Mod> { mod }, false);
             }
         }
 
-        private async Task Install(List<Mod> mods)
+        private async Task Install(List<Mod> mods, bool doRunInstaller = true)
         {
             foreach (var mod in mods)
             {
@@ -241,18 +244,28 @@ namespace MaidBeats.Models
                     File.Copy(Path.Combine(extractTo, file.File), Path.Combine(InstallationPath, file.File));
                 }
 
+                // install process per mod
+                if (doRunInstaller)
+                    foreach (var installer in _installers.Where(w => w.ShouldProcess(mod.Name)).OrderBy(w => w.Priority))
+                        installer.Install(InstallationPath, mod);
+
                 // cleanup directory
                 Directory.Delete(extractTo, true);
             }
         }
 
-        private Task Uninstall(List<Mod> mods)
+        private Task Uninstall(List<Mod> mods, bool doRunUninstaller = true)
         {
             foreach (var mod in mods)
             {
                 var files = mod.Versions[mod.InstalledVersion].Downloads.FirstOrDefault(w => w.Type == "universal" || w.Type == "oculus");
                 if (files == null)
                     throw new InvalidOperationException();
+
+                // uninstall process per mod
+                if (doRunUninstaller)
+                    foreach (var installer in _installers.Where(w => w.ShouldProcess(mod.Name)).OrderBy(w => w.Priority))
+                        installer.Uninstall(InstallationPath, mod);
 
                 foreach (var file in files.HashMd5)
                 {
