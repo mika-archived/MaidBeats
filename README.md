@@ -11,6 +11,7 @@ You can install or manage mods and songs in rich user-interface.
 * [x] Manage Mods
 * [ ] Manage Custom Songs
 * [x] Dependency Resolution
+* [ ] Support One-Click Install
 * [x] **Restore BeatSaber as Vanilla Version**
 
 
