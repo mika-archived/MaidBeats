@@ -195,7 +195,24 @@ namespace MaidBeats.Models
             Debug.WriteLine($"Uninstalls: {string.Join(",", uninstalls.Select(w => w.Name))}");
 
             await Update(changes);
+
+            // if BSIPA is included in installs, change orders so it runs first
+            if (installs.Exists(w => w.Name == "BSIPA"))
+            {
+                var removed = installs[installs.FindIndex(w => w.Name == "BSIPA")];
+                installs.Remove(removed);
+                installs.Insert(0, removed);
+            }
+
             await Install(installs);
+
+            // if BSIPA is included in uninstalls, change orders so it runs last
+            if (uninstalls.Exists(w => w.Name == "BSIPA"))
+            {
+                var removed = uninstalls[uninstalls.FindIndex(w => w.Name == "BSIPA")];
+                uninstalls.Remove(removed);
+                uninstalls.Add(removed);
+            }
             await Uninstall(uninstalls);
         }
 
