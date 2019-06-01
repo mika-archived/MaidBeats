@@ -28,6 +28,7 @@ namespace MaidBeats
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.Register<IPlatform, Oculus>(); // TODO: support steam
+            containerRegistry.RegisterSingleton<CompatTable>();
             containerRegistry.RegisterSingleton<StatusService>();
             containerRegistry.RegisterSingleton<BeatModsClient>();
             containerRegistry.RegisterSingleton<BeatSaber>();

@@ -22,12 +22,12 @@ namespace MaidBeats.ViewModels
         public ReactiveProperty<int> SelectedTabIndex { get; }
         public ReadOnlyReactiveProperty<string> StatusText { get; }
 
-        public MainWindowViewModel(BeatSaber beatSaber, BeatModsClient client, StatusService text)
+        public MainWindowViewModel(BeatSaber beatSaber, BeatModsClient client, StatusService text, CompatTable compatTable)
         {
             Title = new ReactiveProperty<string>("MaidBeats - Mod Installer / Manager for Beat Saber").AddTo(this);
             TabItems = new ReactiveCollection<TabBaseViewModel>
             {
-                new ModsTabViewModel(beatSaber, client).AddTo(this),
+                new ModsTabViewModel(beatSaber, client, compatTable).AddTo(this),
                 new SettingsTabViewModel(beatSaber, client).AddTo(this),
                 new AboutTabViewModel().AddTo(this)
             }.AddTo(this);

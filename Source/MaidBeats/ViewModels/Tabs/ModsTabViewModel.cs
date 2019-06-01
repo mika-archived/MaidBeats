@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -19,17 +20,19 @@ namespace MaidBeats.ViewModels.Tabs
     {
         private readonly BeatSaber _beatSaber;
         private readonly BeatModsClient _client;
+        private readonly CompatTable _compatTable;
 
         public ReadOnlyReactiveProperty<string> GameVersion { get; }
         public ReadOnlyReactiveCollection<ModViewModel> Mods { get; }
         public ReactiveProperty<bool> IsLoading { get; }
 
-        public ModsTabViewModel(BeatSaber beatSaber, BeatModsClient client) : base("Mods")
+        public ModsTabViewModel(BeatSaber beatSaber, BeatModsClient client, CompatTable compatTable) : base("Mods")
         {
             _beatSaber = beatSaber;
             _client = client;
+            _compatTable = compatTable;
 
-            GameVersion = beatSaber.ObserveProperty(w => w.GameVersion).ToReadOnlyReactiveProperty().AddTo(this);
+            GameVersion = beatSaber.ObserveProperty(w => w.GameVersion).Select(WithCompatibleVersion).ToReadOnlyReactiveProperty().AddTo(this);
             GameVersion.Subscribe(_ =>
             {
                 // clear caches
@@ -43,10 +46,15 @@ namespace MaidBeats.ViewModels.Tabs
         {
             IsLoading.Value = true;
 
-            await _client.FetchAllModsAsync(_beatSaber.GameVersion);
+            await _client.FetchAllModsAsync(_compatTable.Has(_beatSaber.GameVersion) ? _compatTable.As(_beatSaber.GameVersion) : _beatSaber.GameVersion);
             await Task.Run(() => _beatSaber.CheckInstalledMods(_client.AvailableMods.ToList()));
 
             IsLoading.Value = false;
+        }
+
+        private string WithCompatibleVersion(string version)
+        {
+            return _compatTable.Has(version) ? $"{version} (Compatible with {_compatTable.As(version)})" : version;
         }
 
         #region ApplyCommand

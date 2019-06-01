@@ -151,6 +151,7 @@
     <Compile Include="Models\BeatMods\DifficultyLevel.cs" />
     <Compile Include="Models\BeatMods\Download.cs" />
     <Compile Include="Models\BeatMods\HashMD5.cs" />
+    <Compile Include="Models\CompatTable.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
     <Compile Include="Models\BeatMods\RawMod.cs" />
     <Compile Include="Models\Mod.cs" />
