@@ -17,7 +17,7 @@ namespace MaidBeats.Models.Installers
                 throw new InvalidOperationException();
 
             var path = Path.Combine(root, Executable);
-            var process = Process.Start(path, "--nowait");
+            var process = Process.Start(new ProcessStartInfo(path, "--nowait") { WorkingDirectory = root });
             process?.WaitForExit();
 
             base.Install(root, mod);
@@ -29,7 +29,7 @@ namespace MaidBeats.Models.Installers
                 throw new InvalidOperationException();
 
             var path = Path.Combine(root, Executable);
-            var process = Process.Start(path, "--revert --nowait");
+            var process = Process.Start(new ProcessStartInfo(path, "--revert --nowait") { WorkingDirectory = root });
             process?.WaitForExit();
 
             base.Uninstall(root, mod);
