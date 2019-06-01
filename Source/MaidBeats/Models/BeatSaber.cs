@@ -256,9 +256,10 @@ namespace MaidBeats.Models
                 {
                     // copy and install to BeatSaber directory
                     var to = Path.Combine(InstallationPath, file.File);
-                    if (!Directory.Exists(to))
+                    if (!Directory.Exists(Path.GetDirectoryName(to)))
                         Directory.CreateDirectory(Path.GetDirectoryName(to) ?? throw new InvalidOperationException());
-                    File.Copy(Path.Combine(extractTo, file.File), Path.Combine(InstallationPath, file.File));
+                    if (!File.Exists(Path.Combine(InstallationPath, file.File))) // if already file, skip it
+                        File.Copy(Path.Combine(extractTo, file.File), Path.Combine(InstallationPath, file.File));
                 }
 
                 // install process per mod
