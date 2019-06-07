@@ -34,7 +34,7 @@ namespace MaidBeats.ViewModels
             SelectedTabIndex = new ReactiveProperty<int>(0);
             SelectedTabIndex.Skip(1).AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
             StatusText = text.ObserveProperty(w => w.Text).ToReadOnlyReactiveProperty().AddTo(this);
-            StatusText.DistinctUntilChanged().Delay(TimeSpan.FromSeconds(5)).Subscribe(w => text.Text = "Ready").AddTo(this);
+            StatusText.DistinctUntilChanged().Delay(TimeSpan.FromSeconds(5)).Subscribe(_ => text.Text = "Ready").AddTo(this);
         }
 
         #region LoadedCommand
