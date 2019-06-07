@@ -22,12 +22,12 @@ _Not yet provided._
 
 ## Compare with other installers
 
-| *                                          | Single Executable | Dependency Resolution | Install and Uninstall |
-| ------------------------------------------ | ----------------- | --------------------- | --------------------- |
-| Beat Drop                                  | No                | Yes                   | Yes                   |
-| Beat Saber Mod Manager (BeatMods Edition!) | Yes *1            | Yes                   | Yes                   |
-| **MaidBeats**                              | No                | Yes                   | Yes                   |
-| ModAssistant                               | Yes               | Yes                   | Yes                   |
+| Software \ Features    | Single Executable | Dependency Resolution | Install and Uninstall |
+| ---------------------- | :---------------: | :-------------------: | :-------------------: |
+| Beat Drop              |        No         |          Yes          |          Yes          |
+| Beat Saber Mod Manager |      Yes *1       |          Yes          |          Yes          |
+| **MaidBeats**          |        No         |          Yes          |          Yes          |
+| ModAssistant           |        Yes        |          Yes          |          Yes          |
 
 
 * *1 : Beat Saber Mod Manager provides an unbundled package for false-positive detection with antivirus softwares.
