@@ -2,14 +2,11 @@
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 using MaidBeats.Extensions;
 using MaidBeats.Models;
 using MaidBeats.Models.BeatMods;
 using MaidBeats.ViewModels.Partial;
-
-using Prism.Commands;
 
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -25,6 +22,7 @@ namespace MaidBeats.ViewModels.Tabs
         public ReadOnlyReactiveProperty<string> GameVersion { get; }
         public ReadOnlyReactiveCollection<ModViewModel> Mods { get; }
         public ReactiveProperty<bool> IsLoading { get; }
+        public ReactiveCommand ApplyChangesCommand { get; }
 
         public ModsTabViewModel(BeatSaber beatSaber, BeatModsClient client, CompatTable compatTable) : base("Mods")
         {
@@ -40,6 +38,16 @@ namespace MaidBeats.ViewModels.Tabs
             }).AddTo(this);
             Mods = client.AvailableMods.ToReadOnlyReactiveCollection(w => new ModViewModel(w, beatSaber)).AddTo(this);
             IsLoading = new ReactiveProperty<bool>(false).AddTo(this);
+            ApplyChangesCommand = _beatSaber.ObserveProperty(w => w.HasChanges).ToReactiveCommand();
+            ApplyChangesCommand.Subscribe(async _ =>
+            {
+                IsLoading.Value = true;
+
+                await _beatSaber.ApplyChanges();
+                await Task.Run(() => _beatSaber.CheckInstalledMods(_client.AvailableMods.ToList()));
+
+                IsLoading.Value = false;
+            }).AddTo(this);
         }
 
         public override async Task InitializeAsync()
@@ -56,22 +64,5 @@ namespace MaidBeats.ViewModels.Tabs
         {
             return _compatTable.Has(version) ? $"{version} (Compatible with {_compatTable.As(version)})" : version;
         }
-
-        #region ApplyCommand
-
-        private ICommand _applyCommand;
-        public ICommand ApplyCommand => _applyCommand ??= new DelegateCommand(Apply);
-
-        private async void Apply()
-        {
-            IsLoading.Value = true;
-
-            await _beatSaber.ApplyChanges();
-            await Task.Run(() => _beatSaber.CheckInstalledMods(_client.AvailableMods.ToList()));
-
-            IsLoading.Value = false;
-        }
-
-        #endregion
     }
 }

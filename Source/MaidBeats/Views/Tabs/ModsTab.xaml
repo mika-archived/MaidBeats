@@ -151,7 +151,7 @@
             <Button Grid.Column="1"
                     Width="200"
                     HorizontalAlignment="Right"
-                    Command="{Binding ApplyCommand}"
+                    Command="{Binding ApplyChangesCommand}"
                     Content="Apply Changes and Updates"
                     FontSize="14"
                     IsEnabled="{Binding IsLoading.Value, Converter={StaticResource BooleanToReverseBooleanConverter}, Mode=OneWay}" />

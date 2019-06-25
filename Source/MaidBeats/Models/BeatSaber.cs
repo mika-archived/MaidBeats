@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,10 +17,13 @@ using MaidBeats.Models.Platform;
 
 using Prism.Mvvm;
 
+using Reactive.Bindings;
+
 namespace MaidBeats.Models
 {
-    public class BeatSaber : BindableBase
+    public class BeatSaber : BindableBase, IDisposable
     {
+        private readonly IDisposable _disposable;
         private readonly HttpClient _httpClient;
         private readonly List<InstallerBase> _installers;
         private readonly IPlatform _platform;
@@ -43,6 +47,23 @@ namespace MaidBeats.Models
             AvailableMods = new ObservableCollection<Mod>(); // All Installable Mods
             InstalledMods = new ObservableCollection<Mod>(); // Already Installed Mods
             ConfiguredMods = new ObservableCollection<Mod>(); // Configuring (Changed) Mods
+            _disposable = new[]
+            {
+                InstalledMods.ToCollectionChanged(),
+                ConfiguredMods.ToCollectionChanged()
+            }.CombineLatest().Subscribe(_ =>
+            {
+                var changes = ConfiguredMods.Where(w => w.InstalledVersion != null && w.InstalledVersion != w.LatestVersionStr).ToList();
+                var installs = ConfiguredMods.Except(InstalledMods).ToList();
+                var uninstalls = InstalledMods.Except(ConfiguredMods).ToList();
+                HasChanges = changes.Count > 0 || installs.Count > 0 || uninstalls.Count > 0;
+            });
+        }
+
+        public void Dispose()
+        {
+            _disposable?.Dispose();
+            _httpClient?.Dispose();
         }
 
         public void TryToDetectInstallationPath()
@@ -337,6 +358,22 @@ namespace MaidBeats.Models
             {
                 if (_gameVersion != value)
                     SetProperty(ref _gameVersion, value);
+            }
+        }
+
+        #endregion
+
+        #region HasChanges
+
+        private bool _hasChanges;
+
+        public bool HasChanges
+        {
+            get => _hasChanges;
+            set
+            {
+                if (_hasChanges != value)
+                    SetProperty(ref _hasChanges, value);
             }
         }
 
