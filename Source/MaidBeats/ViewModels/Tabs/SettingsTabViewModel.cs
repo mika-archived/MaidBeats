@@ -34,8 +34,12 @@ namespace MaidBeats.ViewModels.Tabs
 
         public override async Task InitializeAsync()
         {
+            IsLoading = true;
+
             await _client.FetchGameVersionsAsync();
             GameVersion.Value = _beatSaber.GameVersion;
+
+            IsLoading = false;
         }
 
         #region ChooseFolderCommand
@@ -47,6 +51,22 @@ namespace MaidBeats.ViewModels.Tabs
         {
             _beatSaber.SelectInstallationPathByUser();
             _beatSaber.TryToDetectGameVersion();
+        }
+
+        #endregion
+
+        #region IsLoading
+
+        private bool _isLoading;
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                if (_isLoading != value)
+                    SetProperty(ref _isLoading, value);
+            }
         }
 
         #endregion
