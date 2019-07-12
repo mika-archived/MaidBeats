@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Input;
 
@@ -32,7 +33,7 @@ namespace MaidBeats.ViewModels
                 new AboutTabViewModel().AddTo(this)
             }.AddTo(this);
             SelectedTabIndex = new ReactiveProperty<int>(0);
-            SelectedTabIndex.Skip(1).AsObservable().Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
+            SelectedTabIndex.Skip(1).AsObservable().SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(async w => await TabItems[w].InitializeAsync()).AddTo(this);
             StatusText = text.ObserveProperty(w => w.Text).ToReadOnlyReactiveProperty().AddTo(this);
             StatusText.DistinctUntilChanged().Delay(TimeSpan.FromSeconds(5)).Subscribe(_ => text.Text = "Ready").AddTo(this);
         }
