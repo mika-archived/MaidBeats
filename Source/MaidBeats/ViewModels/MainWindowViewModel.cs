@@ -29,6 +29,7 @@ namespace MaidBeats.ViewModels
             TabItems = new ReactiveCollection<TabBaseViewModel>
             {
                 new ModsTabViewModel(beatSaber, client, compatTable).AddTo(this),
+                new SongsTabViewModel(beatSaber).AddTo(this),
                 new SettingsTabViewModel(beatSaber, client).AddTo(this),
                 new AboutTabViewModel().AddTo(this)
             }.AddTo(this);

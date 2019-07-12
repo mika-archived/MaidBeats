@@ -6,14 +6,18 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using MaidBeats.Models.BeatMods;
 using MaidBeats.Models.Installers;
 using MaidBeats.Models.Platform;
+
+using Newtonsoft.Json;
 
 using Prism.Mvvm;
 
@@ -23,15 +27,23 @@ namespace MaidBeats.Models
 {
     public class BeatSaber : BindableBase, IDisposable
     {
-        private readonly IDisposable _disposable;
+        private readonly CompositeDisposable _compositeDisposable;
         private readonly HttpClient _httpClient;
         private readonly List<InstallerBase> _installers;
+        private readonly Regex _level = new Regex("^[0-9a-f]{4}", RegexOptions.Compiled);
         private readonly IPlatform _platform;
         private readonly StatusService _statusService;
         private bool _isConfiguring;
+
+        // == Mods
+
         public ObservableCollection<Mod> AvailableMods { get; }
         public ObservableCollection<Mod> InstalledMods { get; }
         public ObservableCollection<Mod> ConfiguredMods { get; }
+
+        // == Songs
+
+        public ObservableCollection<Song> InstalledSongs { get; }
 
         public BeatSaber(IPlatform platform, StatusService statusService)
         {
@@ -39,6 +51,7 @@ namespace MaidBeats.Models
             _statusService = statusService;
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", $"MaidBeats/{MaidBeatsInfo.Version.Value}");
+            _compositeDisposable = new CompositeDisposable();
             _installers = new List<InstallerBase> { new InstallerBase(), new BSIPA() };
             _isConfiguring = false;
 
@@ -47,7 +60,8 @@ namespace MaidBeats.Models
             AvailableMods = new ObservableCollection<Mod>(); // All Installable Mods
             InstalledMods = new ObservableCollection<Mod>(); // Already Installed Mods
             ConfiguredMods = new ObservableCollection<Mod>(); // Configuring (Changed) Mods
-            _disposable = new[]
+            InstalledSongs = new ObservableCollection<Song>(); // Already Installed Songs
+            _compositeDisposable.Add(new[]
             {
                 InstalledMods.ToCollectionChanged(),
                 ConfiguredMods.ToCollectionChanged()
@@ -57,18 +71,19 @@ namespace MaidBeats.Models
                 var installs = ConfiguredMods.Except(InstalledMods).ToList();
                 var uninstalls = InstalledMods.Except(ConfiguredMods).ToList();
                 HasChanges = changes.Count > 0 || installs.Count > 0 || uninstalls.Count > 0;
-            });
+            }));
         }
 
         public void Dispose()
         {
-            _disposable?.Dispose();
+            _compositeDisposable?.Dispose();
             _httpClient?.Dispose();
         }
 
         public void TryToDetectInstallationPath()
         {
             InstallationPath = _platform.TryToDetectInstallationPath();
+            CustomLevelsPath = Path.Combine(InstallationPath, "Beat Saber_Data", "CustomLevels");
         }
 
         public void TryToDetectGameVersion()
@@ -94,7 +109,32 @@ namespace MaidBeats.Models
             if (dialog.ShowDialog() != DialogResult.OK)
                 return;
             InstallationPath = dialog.SelectedPath;
+            CustomLevelsPath = Path.Combine(InstallationPath, "Beat Saber_Data", "CustomLevels");
         }
+
+        #region Songs
+
+        public void CheckInstalledSongs()
+        {
+            if (!Directory.Exists(CustomLevelsPath))
+                return; // does not reached to this line?
+            InstalledSongs.Clear();
+
+            foreach (var song in Directory.GetDirectories(CustomLevelsPath))
+            {
+                if (!_level.IsMatch(Path.GetFileName(song) ?? throw new InvalidOperationException()))
+                    return; // we support only "01ab (Name - Author)" format
+                using var fs = new FileStream(Path.Combine(song, "info.dat"), FileMode.Open);
+                using var sr = new StreamReader(fs);
+                var json = JsonConvert.DeserializeObject<Song>(sr.ReadToEnd());
+
+                InstalledSongs.Add(json);
+            }
+        }
+
+        #endregion
+
+        #region Mods
 
         public void CheckInstalledMods(List<Mod> mods)
         {
@@ -183,10 +223,7 @@ namespace MaidBeats.Models
                     foreach (var dependency in mod.Dependencies[mod.LatestVersionStr])
                     {
                         var dep = AvailableMods.SingleOrDefault(w => w.Name == dependency);
-                        if (dep == null)
-                            continue;
-
-                        dep.Dependents.Remove(mod.Name);
+                        dep?.Dependents.Remove(mod.Name);
 
                         // UpdateDependencyTree(dep, false, false);
                     }
@@ -331,6 +368,8 @@ namespace MaidBeats.Models
             return string.Concat(hash.Select(w => w.ToString("x2")));
         }
 
+        #endregion
+
         #region InstallationPath
 
         private string _installationPath;
@@ -342,6 +381,22 @@ namespace MaidBeats.Models
             {
                 if (_installationPath != value)
                     SetProperty(ref _installationPath, value);
+            }
+        }
+
+        #endregion
+
+        #region CustomLevelsPath
+
+        private string _customLevelsPath;
+
+        public string CustomLevelsPath
+        {
+            get => _customLevelsPath;
+            set
+            {
+                if (_customLevelsPath != value)
+                    SetProperty(ref _customLevelsPath, value);
             }
         }
 

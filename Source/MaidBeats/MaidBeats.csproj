@@ -148,9 +148,14 @@
     <Compile Include="Models\BeatMods\Author.cs" />
     <Compile Include="Models\BeatMods\BeatModsClient.cs" />
     <Compile Include="Models\BeatSaber.cs" />
-    <Compile Include="Models\BeatMods\DifficultyLevel.cs" />
     <Compile Include="Models\BeatMods\Download.cs" />
     <Compile Include="Models\BeatMods\HashMD5.cs" />
+    <Compile Include="Models\BeatSaver\ColorMap.cs" />
+    <Compile Include="Models\BeatSaver\Contributor.cs" />
+    <Compile Include="Models\BeatSaver\DifficultyBeatmapCustomData.cs" />
+    <Compile Include="Models\BeatSaver\SongCustomData.cs" />
+    <Compile Include="Models\BeatSaver\DifficultyBeatmap.cs" />
+    <Compile Include="Models\BeatSaver\DifficultyBeatmapSet.cs" />
     <Compile Include="Models\CompatTable.cs" />
     <Compile Include="Models\MaidBeatsInfo.cs" />
     <Compile Include="Models\BeatMods\RawMod.cs" />
@@ -160,7 +165,7 @@
     <Compile Include="Models\Platform\Oculus.cs" />
     <Compile Include="Models\Platform\IPlatform.cs" />
     <Compile Include="Models\Platform\Steam.cs" />
-    <Compile Include="Models\Song.cs" />
+    <Compile Include="Models\BeatSaver\Song.cs" />
     <Compile Include="Models\StatusService.cs" />
     <Compile Include="Mvvm\ViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -168,6 +173,7 @@
     <Compile Include="ViewModels\Tabs\AboutTabViewModel.cs" />
     <Compile Include="ViewModels\Tabs\ModsTabViewModel.cs" />
     <Compile Include="ViewModels\Tabs\SettingsTabViewModel.cs" />
+    <Compile Include="ViewModels\Tabs\SongsTabViewModel.cs" />
     <Compile Include="ViewModels\Tabs\TabBaseViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
