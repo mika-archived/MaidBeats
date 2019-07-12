@@ -61,15 +61,22 @@
 
         <TextBlock Grid.Row="2"
                    Grid.Column="0"
-                   Text="Installation Type :" />
+                   Text="CustomLevels Directory :" />
         <TextBlock Grid.Row="2"
                    Grid.Column="1"
-                   Text="Oculus" />
+                   Text="{Binding CustomLevelsPath.Value, Mode=OneWay}" />
 
         <TextBlock Grid.Row="3"
                    Grid.Column="0"
+                   Text="Installation Type :" />
+        <TextBlock Grid.Row="3"
+                   Grid.Column="1"
+                   Text="Oculus" />
+
+        <TextBlock Grid.Row="4"
+                   Grid.Column="0"
                    Text="Game Version :" />
-        <ComboBox Grid.Row="3"
+        <ComboBox Grid.Row="4"
                   Grid.Column="1"
                   Width="320"
                   Height="32"

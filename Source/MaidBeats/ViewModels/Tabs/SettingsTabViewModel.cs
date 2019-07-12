@@ -17,6 +17,7 @@ namespace MaidBeats.ViewModels.Tabs
         private readonly BeatSaber _beatSaber;
         private readonly BeatModsClient _client;
         public ReactiveProperty<string> InstallationPath { get; }
+        public ReadOnlyReactiveProperty<string> CustomLevelsPath { get; }
         public ReactiveProperty<string> GameVersion { get; }
         public ReadOnlyReactiveCollection<string> GameVersions { get; }
 
@@ -26,6 +27,7 @@ namespace MaidBeats.ViewModels.Tabs
             _client = client;
 
             InstallationPath = beatSaber.ObserveProperty(w => w.InstallationPath).ToReactiveProperty().AddTo(this);
+            CustomLevelsPath = beatSaber.ObserveProperty(w => w.CustomLevelsPath).ToReadOnlyReactiveProperty().AddTo(this);
             GameVersion = beatSaber.ToReactivePropertyAsSynchronized(w => w.GameVersion, ignoreValidationErrorValue: true)
                                    .SetValidateNotifyError(w => string.IsNullOrWhiteSpace(w) ? "Error" : null)
                                    .AddTo(this);
