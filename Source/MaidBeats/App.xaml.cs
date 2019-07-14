@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading;
+using System.Windows;
 
 using MaidBeats.Models;
 using MaidBeats.Models.BeatMods;
@@ -17,9 +18,18 @@ namespace MaidBeats
     /// </summary>
     public partial class App : PrismApplication
     {
+        private readonly Mutex _mutex = new Mutex(false, "mochizuki.dev/maidbeats");
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            if (!_mutex.WaitOne(0, false))
+            {
+                _mutex.Close();
+                Current.Shutdown();
+                return;
+            }
 
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             ThemeService.Current.Register(this, Theme.Windows, Accent.Windows);
@@ -49,6 +59,17 @@ namespace MaidBeats
         protected override Window CreateShell()
         {
             return Container.Resolve<MainWindow>();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            if (_mutex != null)
+            {
+                _mutex.ReleaseMutex();
+                _mutex.Close();
+            }
+
+            base.OnExit(e);
         }
     }
 }
