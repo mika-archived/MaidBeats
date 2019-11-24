@@ -66,6 +66,12 @@ namespace MaidBeats.Models.BeatMods
             return obj is RawMod other && other.Name == Name && other.Version == Version;
         }
 
+        public override int GetHashCode()
+        {
+            // ReSharper disable NonReadonlyMemberInGetHashCode
+            return Name.GetHashCode() + Version.GetHashCode();
+        }
+
         #region Version
 
         private Version _version;
@@ -74,16 +80,18 @@ namespace MaidBeats.Models.BeatMods
         public string Version
         {
             get => $"{_version.Major}.{_version.Minor}.{_version.Build}";
-            set => _version = new Version(value.EndsWith(".") ? value.Substring(0, value.Length - 1) : value); // patch for version "2.0.0.", why?
+            set
+            {
+                if (value.StartsWith("v"))
+                    _version = new Version(value.Substring(1));
+                else if (value.EndsWith("."))
+                    _version = new Version(value.Substring(0, value.Length - 1));
+                else
+                    _version = new Version(value);
+            } // patch for version "2.0.0.", why?
         }
 
         #endregion
-
-        public override int GetHashCode()
-        {
-            // ReSharper disable NonReadonlyMemberInGetHashCode
-            return Name.GetHashCode() + Version.GetHashCode();
-        }
     }
 
     public class DependencyMod : RawMod

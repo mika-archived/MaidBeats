@@ -39,7 +39,7 @@ using System.Windows;
 
     //(リソースがページ、
     //アプリケーション、またはいずれのテーマ固有のリソース ディクショナリにも見つからない場合に使用されます)
-    )]
+)]
 
 // アセンブリのバージョン情報は次の 4 つの値で構成されています:
 //
@@ -52,5 +52,5 @@ using System.Windows;
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.1.0")]
+[assembly: AssemblyFileVersion("1.0.1.0")]
